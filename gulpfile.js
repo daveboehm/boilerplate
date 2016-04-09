@@ -10,15 +10,13 @@ var gulp = require('gulp'),
     watch = require('gulp-watch');
 
 // ============================================================================
-// Concatenate all JS core files 
-// gulp.task('core-scripts', function () {
-//     return gulp.src(['scripts/core/*.js', 'scripts/core/modules/**/*.js'])
-//         .pipe(concat('core.js'))
-//         .pipe(gulp.dest('dist/'));
-// });
+// Concatenate all JS core app files 
 gulp.task('core-scripts', function () {
     return gulp.src(['node_modules/angular/angular.min.js', 'node_modules/angular-*/**/*.min.js'])
         .pipe(concat('core.js'))
+        .pipe(uglify({
+            mangle: false
+        }))
         .pipe(gulp.dest('dist/'));
 });
 
@@ -27,15 +25,16 @@ gulp.task('core-scripts', function () {
 gulp.task('vendor-scripts', function () {
     return gulp.src(['scripts/vendor/**/*.js'])
         .pipe(concat('vendor.js'))
+        .pipe(uglify())
         .pipe(gulp.dest('dist/'));
 });
 
 // ============================================================================
 // Concatenate and minify all custom JS files
 gulp.task('app-scripts', function () {
-    return gulp.src(['scripts/app/*.js', 'services/*.js', 'directives/**/*.js', 'directives/**/*.js', 'views/**/*.js'])
-        .pipe(uglify())
+    return gulp.src(['scripts/app/*.js', 'services/**/*.js', 'directives/**/*.js', 'directives/**/*.js', 'views/**/*.js'])
         .pipe(concat('app.js'))
+        .pipe(uglify({mangle: false}))
         .pipe(gulp.dest('dist/'));
 });
 
@@ -58,7 +57,7 @@ gulp.task('webserver', function () {
         host: 'localhost',
         port: '8888',
         path: '/',
-        open: true
+        open: false
     }));
 });
 
@@ -66,8 +65,8 @@ gulp.task('webserver', function () {
 // Run tasks on file changes
 gulp.task('watch', function () {
     gulp.watch(['scripts/app/*.js', 'directives/**/*/*.js', 'services/**/*.js', 'views/**/*.js'], ['app-scripts']);
-    gulp.watch(['scripts/core/*.js', 'scripts/vendor/*.js'], ['core-scripts', 'vendor-scripts'])
-    gulp.watch('**/*.less', ['less', 'minify-css']);
+    gulp.watch(['scripts/vendor/**/*.js'], ['vendor-scripts'])
+    gulp.watch('**/*.less', ['less']);
 });
 
 // Tasks to be ran on `gulp`
