@@ -6,13 +6,18 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     path = require('path'),
     concat = require('gulp-concat'),
-    mincss = require('gulp-minify-css'),
+    mincss = require('gulp-clean-css'),
     watch = require('gulp-watch');
 
 // ============================================================================
 // Concatenate all JS core files 
+// gulp.task('core-scripts', function () {
+//     return gulp.src(['scripts/core/*.js', 'scripts/core/modules/**/*.js'])
+//         .pipe(concat('core.js'))
+//         .pipe(gulp.dest('dist/'));
+// });
 gulp.task('core-scripts', function () {
-    return gulp.src(['scripts/core/*.js'])
+    return gulp.src(['node_modules/angular/angular.min.js', 'node_modules/angular-*/**/*.min.js'])
         .pipe(concat('core.js'))
         .pipe(gulp.dest('dist/'));
 });
@@ -20,7 +25,7 @@ gulp.task('core-scripts', function () {
 // ============================================================================
 // Concatenate all JS vendor files 
 gulp.task('vendor-scripts', function () {
-    return gulp.src(['scripts/vendor/*.js'])
+    return gulp.src(['scripts/vendor/**/*.js'])
         .pipe(concat('vendor.js'))
         .pipe(gulp.dest('dist/'));
 });
@@ -35,25 +40,14 @@ gulp.task('app-scripts', function () {
 });
 
 // ============================================================================
-// Compile all less into single CSS file
+// Compile all less into single CSS file and minify it
 gulp.task('less', function () {
     gulp.src('styles/app/app.less')
         .pipe(changed('styles/**/*.less'))
         .pipe(less())
-        .pipe(mincss({
-            compatibility: 'ie10'
-        }))
+        .pipe(mincss())
         .pipe(gulp.dest('dist/'))
         .on('error', gutil.log);
-});
-
-//Minify app.css
-gulp.task('minify-css', function () {
-    //    return gulp.src('dist/*.css')
-    //        .pipe(mincss({
-    //            compatibility: 'ie10'
-    //        }))
-    //        .pipe(gulp.dest('dist/'));
 });
 
 // ============================================================================
@@ -77,4 +71,4 @@ gulp.task('watch', function () {
 });
 
 // Tasks to be ran on `gulp`
-gulp.task('default', ['watch', 'webserver', 'less', 'app-scripts', 'core-scripts', 'vendor-scripts', 'minify-css']);
+gulp.task('default', ['watch', 'webserver', 'less', 'app-scripts', 'core-scripts', 'vendor-scripts']);
